@@ -48,508 +48,565 @@
 
 
 
-
   <body>
     <button class="copy-button" onclick="copyText()">Copy Text</button>
     <div class="container">
       <div class="text-content" id="text-content">
         
         //*************************************
-        Experiment-3
-        Write a program to implement the naïve Bayesian classifier for a sample training data set stored as a .CSV file. Compute the accuracy of the classifier, considering few test data sets. Data Set You can use Java/Python ML library classes/API.
+        WAP to demonstrate working of decision tree based ID3 algorithm
         import pandas as pd
-        import numpy as np
-        df_play=pd.read_csv('PlayTennis.csv')
-        df_play.head(15)
-        import plotly.express as plt
-        figure=plt.parallel_categories(df_play[['Outlook','Play Tennis']],height=400,width=500)
-        figure.show()
-        from sklearn.preprocessing import LabelEncoder
-        LE=LabelEncoder()
-        df_play['Outlook']=LE.fit_transform(df_play['Outlook'])
-        df_play['Temperature']=LE.fit_transform(df_play['Temperature'])
-        df_play['Humidity']=LE.fit_transform(df_play['Humidity'])
-        df_play['Wind']=LE.fit_transform(df_play['Wind'])
-        df_play.head(15)
-        X=df_play.drop('Play Tennis',axis=1)
-        y=df_play['Play Tennis']
-        from sklearn.model_selection import train_test_split
-        X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.2,random_state=101)
-        from sklearn.naive_bayes import GaussianNB
-        model=GaussianNB()
-        model.fit(X_train,y_train)
-        y_pred=model.predict([[2,0,0,0]])
-        y_pred
-        array(['No'], dtype='< '>' U3')
-        predictions=model.predict(X_test)
-        from sklearn.metrics import accuracy_score
-        accuracy_score(y_test,predictions)
-        
-        
+        from sklearn.tree import DecisionTreeClassifier
+        from sklearn import tree
+        import matplotlib.pyplot as plt
+        # Load the dataset from File.csv
+        df = pd.read_csv('File.csv')
+        # Display the first few rows of the dataset
+        print("Dataset:")
+        print(df.head())
+        # Convert categorical data to numerical data using one-hot encoding
+        df_encoded = pd.get_dummies(df.drop('PlayTennis', axis=1))
+        # Separate features and target variable
+        X = df_encoded
+        y = df['PlayTennis']
+        # Encode target labels to numerical values
+        y = y.map({'Yes': 1, 'No': 0})
+        # Create and train the decision tree classifier
+        clf = DecisionTreeClassifier(criterion='entropy')  # Using 'entropy' to mimic ID3
+        clf = clf.fit(X, y)
+        # Visualize the decision tree
+        plt.figure(figsize=(12,8))
+        tree.plot_tree(clf, feature_names=X.columns, class_names=['No', 'Yes'], filled=True)
+        plt.show()
+        # Print the tree rules
+        tree_rules = tree.export_text(clf, feature_names=list(X.columns))
+        print(tree_rules)
+
         //*************************************
-        KNN Implementation
-        from sklearn.datasets import load_iris
-        from sklearn.neighbors import KNeighborsClassifier
+        WAP to demonstrate working of naive byas algorithm
+        import pandas as pd
         from sklearn.model_selection import train_test_split
-        from sklearn.metrics import classification_report, confusion_matrix
+        from sklearn.naive_bayes import GaussianNB
+        from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
-        # Load Iris dataset
-        iris = load_iris()
+        # Load the dataset from File.csv
+        df = pd.read_csv('File.csv')
 
-        iris.feature_names
+        # Display the first few rows of the dataset
+        print("Dataset:")
+        print(df.head())
 
-        iris.target
+        # Convert categorical data to numerical data using one-hot encoding
+        df_encoded = pd.get_dummies(df.drop('PlayTennis', axis=1))
+        
+        # Separate features and target variable
+        X = df_encoded
+        y = df['PlayTennis']
 
-        iris.data
+        # Encode target labels to numerical values
+        y = y.map({'Yes': 1, 'No': 0})
 
-        # Split dataset into training and testing sets
-        X_train, X_test, y_train, y_test = train_test_split(iris.data, iris.target, test_size=0.3)
+        # Split the data into training and testing sets
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
-        # Train k-NN classifier
-        knn = KNeighborsClassifier(n_neighbors=3)
+        # Create and train the Naive Bayes classifier
+        nb = GaussianNB()
+        nb.fit(X_train, y_train)
+
+        # Make predictions on the test data
+        y_pred = nb.predict(X_test)
+
+        # Evaluate the model
+        accuracy = accuracy_score(y_test, y_pred)
+        print(f'Accuracy: {accuracy}')
+        print('Classification Report:')
+        print(classification_report(y_test, y_pred, target_names=['No', 'Yes']))
+        print('Confusion Matrix:')
+        print(confusion_matrix(y_test, y_pred))
+        //*************************************
+        WAP to demonstrate working of KNN algorithm
+        import pandas as pd
+        from sklearn.model_selection import train_test_split
+        from sklearn.preprocessing import StandardScaler
+        from sklearn.neighbors import KNeighborsClassifier
+        from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+        # Load the dataset from File.csv
+        df = pd.read_csv('File.csv')
+
+        # Display the first few rows of the dataset
+        print("Dataset:")
+        print(df.head())
+
+        # Convert categorical data to numerical data using one-hot encoding
+        df_encoded = pd.get_dummies(df.drop('PlayTennis', axis=1))
+
+        # Separate features and target variable
+        X = df_encoded
+        y = df['PlayTennis']
+
+        # Encode target labels to numerical values
+        y = y.map({'Yes': 1, 'No': 0})
+
+        # Split the data into training and testing sets
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+        # Standardize the features (KNN performs better with standardized data)
+        scaler = StandardScaler()
+        X_train = scaler.fit_transform(X_train)
+        X_test = scaler.transform(X_test)
+
+        # Create and train the KNN classifier
+        knn = KNeighborsClassifier(n_neighbors=5)  # Using 5 neighbors
         knn.fit(X_train, y_train)
 
-        # Test k-NN classifier
+        # Make predictions on the test data
         y_pred = knn.predict(X_test)
 
-        # Print classification report
-        print(classification_report(y_test, y_pred))
-
-
-
-        for i in range(len(y_test)):
-        if y_test[i] == y_pred[i]:
-        print("Correct prediction: ", iris.target_names[y_pred[i]])
-        else:
-        print("Wrong prediction: ", iris.target_names[y_pred[i]])
-
-        # Print confusion matrix
-        print("Confusion matrix:\n", confusion_matrix(y_test, y_pred))
-
-        //*************************************\
-        
-        Experiment-2
-        Linear Regression
-        
-        import pandas as pd
-        import numpy as np
-        df_salary=pd.read_csv('Salary_Data.csv')
-        df_salary.head()
-
-        import matplotlib.pyplot as plt
-        plt.figure(figsize=(10,6))
-        plt.scatter(x='YearsExperience',y='Salary',data=df_salary,marker='*',color='red')
-        plt.title('Years Experience vs Salary')
-        plt.xlabel('Experience(In Years)')
-        plt.ylabel('Salary(In INR)')
-        plt.show()
-        
-        X=df_salary.drop('Salary',axis=1)
-        X.head(5)
-        y=df_salary[['Salary']]
-        y.head(5)
-        from sklearn.model_selection import train_test_split
-         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=101)
-        from sklearn.preprocessing import StandardScaler
-        sc_X=StandardScaler()
-        sc_y=StandardScaler()
-        X_train=sc_X.fit_transform(X_train)
-        y_train=sc_y.fit_transform(y_train)
-        from sklearn.linear_model import LinearRegression
-        regressor=LinearRegression()
-        regressor.fit(X_train,y_train)
-        y_pred_train=regressor.predict(X_train)
-        plt.figure(figsize=(10,6))
-        plt.scatter(X_train,y_train)
-        plt.plot(X_train,y_pred_train,color='green')
-        plt.title('Years Experience vs Salary (On Training Data)')
-        plt.xlabel('Experience(In Years)')
-        plt.ylabel('Salary(In INR)')
-        plt.show()
-        
-        X_test=sc_X.fit_transform(X_test)
-        y_test=sc_y.fit_transform(y_test)
-        y_pred_test=regressor.predict(X_test)
-        plt.figure(figsize=(10,6))
-        plt.scatter(X_test,y_test)
-        plt.plot(X_test,y_pred_test,color='green')
-        plt.title('Years Experience vs Salary (On Test Data)')
-        plt.xlabel('Experience(In Years)')
-        plt.ylabel('Salary(In INR)')
-        plt.show()
-        
-        from sklearn.metrics import r2_score
-        score=r2_score(y_test,y_pred_test)
-        score
+        # Evaluate the model
+        accuracy = accuracy_score(y_test, y_pred)
+        print(f'Accuracy: {accuracy}')
+        print('Classification Report:')
+        print(classification_report(y_test, y_pred, target_names=['No', 'Yes']))
+        print('Confusion Matrix:')
+        print(confusion_matrix(y_test, y_pred))
         //*************************************
-        SVM_Practice
-        
-        import numpy as np
+        WAP to demonstrate working of Logestic regression
         import pandas as pd
-        df_social=pd.read_csv('Social_Network_Ads.csv')
-        df_social.head()
-        df_social.shape
-        X=df_social.iloc[:,[2,3]]
-        X.head()
-        y=df_social.iloc[:,4]
-        y.head(5)
         from sklearn.model_selection import train_test_split
-        X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.25,random_state=42)
         from sklearn.preprocessing import StandardScaler
-        sc_X=StandardScaler()
-        X_train=sc_X.fit_transform(X_train)
-        X_test=sc_X.fit_transform(X_test)
+        from sklearn.linear_model import LogisticRegression
+        from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+        # Load the dataset from File.csv
+        df = pd.read_csv('File.csv')
+        # Display the first few rows of the dataset
+        print("Dataset:")
+        print(df.head())
+        # Convert categorical data to numerical data using one-hot encoding
+        df_encoded = pd.get_dummies(df.drop('PlayTennis', axis=1))
+        # Separate features and target variable
+        X = df_encoded
+        y = df['PlayTennis']
+        # Encode target labels to numerical values
+        y = y.map({'Yes': 1, 'No': 0})
+        # Split the data into training and testing sets
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+        # Standardize the features (optional but often improves performance)
+        scaler = StandardScaler()
+        X_train = scaler.fit_transform(X_train)
+        X_test = scaler.transform(X_test)
+        # Create and train the Logistic Regression classifier
+        log_reg = LogisticRegression()
+        log_reg.fit(X_train, y_train)
+        # Make predictions on the test data
+        y_pred = log_reg.predict(X_test)
+        # Evaluate the model
+        accuracy = accuracy_score(y_test, y_pred)
+        print(f'Accuracy: {accuracy}')
+        print('Classification Report:')
+        print(classification_report(y_test, y_pred, target_names=['No', 'Yes']))
+        print('Confusion Matrix:')
+        print(confusion_matrix(y_test, y_pred))
+        //*************************************
+        WAP to show working of support vector machine
+        import numpy as np
+        import pandas as pd
+        import matplotlib.pyplot as plt
+        from sklearn.model_selection import train_test_split
+        from sklearn.preprocessing import StandardScaler
         from sklearn.svm import SVC
-        model=SVC(kernel='linear')
-        model.fit(X_train,y_train)
-        y_pred=model.predict(X_test)
-        y_pred
         from sklearn.metrics import accuracy_score
-        print('Accuracy Score with Linear Kernal...')
-        print('Accuracy Score is:',accuracy_score(y_test,y_pred))
-        model=SVC(kernel='rbf')
-        model.fit(X_train,y_train)
-        y_pred=model.predict(X_test)
-        y_pred
-        print('Accuracy Score with RBF Kernal...')
-        print('Accuracy Score is:',accuracy_score(y_test,y_pred))
+
+        # Load dataset from CSV file
+        df = pd.read_csv('file.csv')
+
+        # Assuming the last column is the target variable
+        X = df.iloc[:, :-1].values
+        y = df.iloc[:, -1].values
+
+        # Split dataset into train and test sets
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+        # Standardize features by removing the mean and scaling to unit variance
+        sc = StandardScaler()
+        X_train = sc.fit_transform(X_train)
+        X_test = sc.transform(X_test)
+
+        # Train the SVM model
+        svm = SVC(kernel='linear', C=1.0, random_state=42)
+        svm.fit(X_train, y_train)
+
+        # Make predictions
+        y_pred = svm.predict(X_test)
+
+        # Calculate accuracy
+        accuracy = accuracy_score(y_test, y_pred)
+        print("Accuracy:", accuracy)
+
+        # No visualization if the number of features is more than 2
+        if X_train.shape[1] == 2:
+            # Visualize decision boundary
+            def plot_decision_boundary(X, y, classifier):
+                # Create a meshgrid of points
+                x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+                y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+                xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.1),
+                                    np.arange(y_min, y_max, 0.1))
+                
+                # Plot decision boundary
+                Z = classifier.predict(np.c_[xx.ravel(), yy.ravel()])
+                Z = Z.reshape(xx.shape)
+                plt.contourf(xx, yy, Z, alpha=0.4)
+                plt.scatter(X[:, 0], X[:, 1], c=y, marker='o', edgecolors='k')
+
+            # Plot decision boundary
+            plot_decision_boundary(X_train, y_train, svm)
+            plt.title('SVM Decision Boundary')
+            plt.xlabel('Feature 1')
+            plt.ylabel('Feature 2')
+            plt.show()
+        //*************************************
+        WAP to show working of Random forest clasifier
+        import numpy as np
+        import pandas as pd
+        from sklearn.model_selection import train_test_split
+        from sklearn.ensemble import RandomForestClassifier
+        from sklearn.metrics import accuracy_score
+
+        # Load dataset from CSV file
+        df = pd.read_csv('file.csv')
+
+        # Assuming the last column is the target variable
+        X = df.iloc[:, :-1].values
+        y = df.iloc[:, -1].values
+
+        # Split dataset into train and test sets
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+        # Train the Random Forest model
+        rf_classifier = RandomForestClassifier(n_estimators=100, random_state=42)
+        rf_classifier.fit(X_train, y_train)
+
+        # Make predictions
+        y_pred = rf_classifier.predict(X_test)
+
+        # Calculate accuracy
+        accuracy = accuracy_score(y_test, y_pred)
+        print("Accuracy:", accuracy)
+        //*************************************
+        WAP to show working of Random forest regression
+        import numpy as np
+        import pandas as pd
+        from sklearn.model_selection import train_test_split
+        from sklearn.ensemble import RandomForestRegressor
+        from sklearn.metrics import mean_squared_error
+
+        # Load dataset from CSV file
+        df = pd.read_csv('file.csv')
+
+        # Assuming the last column is the target variable
+        X = df.iloc[:, :-1].values
+        y = df.iloc[:, -1].values
+
+        # Split dataset into train and test sets
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+        # Train the Random Forest model
+        rf_regressor = RandomForestRegressor(n_estimators=100, random_state=42)
+        rf_regressor.fit(X_train, y_train)
+
+        # Make predictions
+        y_pred = rf_regressor.predict(X_test)
+
+        # Calculate Mean Squared Error (MSE)
+        mse = mean_squared_error(y_test, y_pred)
+        print("Mean Squared Error:", mse)
+        //*************************************
+        WAP to apply EM algorithm
+        import numpy as np
+        from sklearn.datasets import make_blobs
+        from sklearn.mixture import GaussianMixture
+
+        # Generate synthetic data
+        X, _ = make_blobs(n_samples=300, centers=3, cluster_std=1.0, random_state=42)
+
+        # Initialize the Gaussian Mixture Model
+        n_components = 3
+        gmm = GaussianMixture(n_components=n_components, random_state=42)
+
+        # Fit the model to the data
+        gmm.fit(X)
+
+        # Predict cluster labels
+        labels = gmm.predict(X)
+
+        # Print the means and covariances of each component
+        print("Means:")
+        print(gmm.means_)
+        print("\nCovariances:")
+        print(gmm.covariances_)
+
+        # Print the weights of each component
+        print("\nWeights:")
+        print(gmm.weights_)
+        //*************************************
+        WAP to apply k means clustering
+        import numpy as np
         import matplotlib.pyplot as plt
-        plt.scatter(X_train[:,0],X_train[:,1],c=y_train)
-        plt.xlabel('Age')
-        plt.ylabel('Estimated Salary')
-        plt.title('Data Distribution')
+        from sklearn.datasets import make_blobs
+        from sklearn.cluster import KMeans
+
+        # Generate synthetic data
+        X, _ = make_blobs(n_samples=300, centers=4, cluster_std=0.60, random_state=42)
+
+        # Apply K-means clustering
+        kmeans = KMeans(n_clusters=4, random_state=42)
+        kmeans.fit(X)
+
+        # Get cluster centroids and labels
+        centroids = kmeans.cluster_centers_
+        labels = kmeans.labels_
+
+        # Visualize the clusters
+        plt.scatter(X[:, 0], X[:, 1], c=labels, cmap='viridis')
+        plt.scatter(centroids[:, 0], centroids[:, 1], marker='*', s=300, c='red', label='Centroids')
+        plt.title('K-means Clustering')
+        plt.xlabel('Feature 1')
+        plt.ylabel('Feature 2')
+        plt.legend()
         plt.show()
-        
-         //************************************************
-        Candidate elemination algo
-        import csv
-        # Open the csv file "candidate_elimination.csv"
-        with open("candidate_elimination.csv") as f:
-            # Read the contents of the file using the csv reader
-            csv_file = csv.reader(f)
-            # Convert the contents to a list of lists
-            data = list(csv_file)
-        data
-        # Initialize the specific hypothesis with the first row of the data, excluding the last column
-        specific = data[0][:-1]
-        # Initialize the general hypothesis with a list of "?" of the same length as the specific hypothesis
-        general = [['?' for i in range(len(specific))] for j in range(len(specific))]
-        specific
-        general
+        //*************************************
+        WAP to apply k means clustering
+        import numpy as np
+        import matplotlib.pyplot as plt
+        from sklearn.datasets import make_blobs
+        from sklearn.cluster import KMeans
 
+        # Generate synthetic data
+        X, _ = make_blobs(n_samples=300, centers=4, cluster_std=0.60, random_state=42)
 
+        # Apply K-means clustering
+        kmeans = KMeans(n_clusters=4, random_state=42)
+        kmeans.fit(X)
 
-                # Iterate over each row in the data
-        for i in data:
-            # If the last column of the current row is "Yes"
-            if i[-1] == "Yes":
-                # Iterate over each column in the current row
-                for j in range(len(specific)):
-                    # If the current column value is not equal to the corresponding value in the specific hypothesis
-                    if i[j] != specific[j]:
-                        # Update the corresponding value in the specific hypothesis to "?"
-                        specific[j] = "?"
-                        # Update the corresponding value in the general hypothesis to "?"
-                        general[j][j] = "?"
+        # Get cluster centroids and labels
+        centroids = kmeans.cluster_centers_
+        labels = kmeans.labels_
 
-            # If the last column of the current row is "No"
-            elif i[-1] == "No":
-                # Iterate over each column in the current row
-                for j in range(len(specific)):
-                    # If the current column value is not equal to the corresponding value in the specific hypothesis
-                    if i[j] != specific[j]:
-                        # Update the corresponding value in the general hypothesis to the corresponding value in the specific hypothesis
-                        general[j][j] = specific[j]
-                    else:
-                        # If the current column value is equal to the corresponding value in the specific hypothesis, update the corresponding value in the general hypothesis to "?"
-                        general[j][j] = "?"
-            # Print the current step of the algorithm and the values of the specific and general hypotheses
-            print("\nStep " + str(data.index(i)+1) + " of Candidate Elimination Algorithm")
-            print(specific)
-            print(general)
+        # Visualize the clusters
+        plt.scatter(X[:, 0], X[:, 1], c=labels, cmap='viridis')
+        plt.scatter(centroids[:, 0], centroids[:, 1], marker='*', s=300, c='red', label='Centroids')
+        plt.title('K-means Clustering')
+        plt.xlabel('Feature 1')
+        plt.ylabel('Feature 2')
+        plt.legend()
+        plt.show()
+        //*************************************
+        WAP to implement Candidate elimanation algoimport csv
 
-        # Print the current step of the algorithm and the values of the specific and general hypotheses
-        print("\nStep " + str(data.index(i)+1) + " of Candidate Elimination Algorithm")
-        print(specific)
-        print(general)
+        # Function to read data from CSV file
+        def read_data_from_csv(file_path):
+            data = []
+            with open(file_path, 'r') as file:
+                csv_reader = csv.reader(file)
+                for row in csv_reader:
+                    data.append(row)
+            return data
 
-
-        # Initialize the final general hypothesis list
-        gh = []
-        # Iterate over each list in the general hypothesis
-        for i in general:
-            # Iterate over each value in the current list
-            for j in i:
-                # If the current value is not "?"
-                if j != '?':
-                    # Add the current list to the final general hypothesis list
-                    gh.append(i)
+        # Candidate Elimination algorithm
+        def candidate_elimination(instances):
+            num_attributes = len(instances[0]) - 1
+            specific_hypothesis = ['0'] * num_attributes
+            general_hypothesis = ['?'] * num_attributes
+            
+            for instance in instances:
+                target = instance[-1]
+                if target == 'Y':
+                    specific_hypothesis = instance[:-1]
                     break
-        # Print the final specific and general hypotheses
-        print("\nFinal Specific hypothesis:\n", specific)
-        print("\nFinal General hypothesis:\n", gh)
-        
-        //*************************************************
-        Decision Tree Classifier
-        
-        
-        # Importing the necessary libraries
-        import pandas as pd
-        # Reading the Excel file and storing the data in a Pandas DataFrame
-        df_music = pd.read_excel('Music.xlsx')
-        # Displaying the first few rows of the DataFrame
-        df_music.head()
-        # Separating the input features and output label into separate variables
-        X = df_music.drop('Genre', axis=1)
-        y = df_music['Genre']
-        # Displaying the first few rows of the input feature DataFrame
-        X.head()
-        # Displaying the first few rows of the output label DataFrame
-        y.head()
-        # Creating a Decision Tree classifier object with the 'entropy' criterion
-        from sklearn.tree import DecisionTreeClassifier
-        model = DecisionTreeClassifier(criterion='entropy')
-        # Training the model on the input feature and output label data
-        model.fit(X, y)
-        # Predicting the genre for two sets of input data and storing the predictions in the 'prediction' variable
-        prediction = model.predict([[23, 1], [31, 0]])
-        # Displaying the predictions
-        prediction
-        # Splitting the data into training and testing sets using the 'train_test_split' function from the 'sklearn.model_selection' module
-        from sklearn.model_selection import train_test_split
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-        # Training the model on the training set
-        model.fit(X_train, y_train)
-        # Predicting the output for the test set and storing the predictions in the 'prediction' variable
-        prediction = model.predict(X_test)
-        # Displaying the predictions
-        prediction
-        # Displaying the actual output labels for the test set
-        y_test
-        # Evaluating the accuracy of the model using the 'accuracy_score' function from the 'sklearn.metrics' module
-        from sklearn.metrics import accuracy_score
-        accuracy_score(y_test, prediction)
-        #import the required libaries
-        import joblib
-        # Saving the trained model using joblib
-        joblib.dump(model, 'music-recommender')
-        ['music-recommender']
-        # Loading the saved model using joblib
-        model = joblib.load('music-recommender')
-        # Predicting the genre for two sets of input data and storing the predictions in the 'prediction' variable
-        prediction=model.predict([[23,1],[31,0]])
-        # Displaying the predictions
-        prediction
-        from sklearn.tree import export_graphviz
-        
-        # Creating a visualization of the decision tree using Graphviz and Pydotplus
-        export_graphviz(model,out_file='music-recommeder.dot',feature_names=['Age','Gender'],class_names=sorted(y.unique()),label='all',rounded=True,filled=True)
-        import pydotplus
-        decision_tree=pydotplus.graph_from_dot_file('music-recommeder.dot')
-        from IPython.display import Image
-        Image(decision_tree.create_png())
+            
+            for instance in instances:
+                if instance[-1] == 'Y':
+                    for i in range(num_attributes):
+                        if specific_hypothesis[i] != instance[i]:
+                            specific_hypothesis[i] = '?'
+                        for j in range(num_attributes):
+                            if specific_hypothesis[j] == '?' and instance[j] != general_hypothesis[j]:
+                                general_hypothesis[j] = specific_hypothesis[j]
+                else:
+                    for i in range(num_attributes):
+                        if specific_hypothesis[i] != instance[i]:
+                            general_hypothesis = generalize(general_hypothesis, instance)
+                            general_hypothesis = [h for h in general_hypothesis if is_consistent(h, instance)]
+                            specialized_hypotheses = specialize(specific_hypothesis, instance, instance)
+                            general_hypothesis.extend(specialized_hypotheses)
+                            general_hypothesis = [h for h in general_hypothesis if is_consistent(h, instance)]
+                            
+            return specific_hypothesis, general_hypothesis
 
-        //*************************************************
-        Experiment-4
-        Implement and demonstrate the FIND-Salgorithm for finding the most specifichypothesis based on a given set of training data samples. Read the training data from a .CSV file.
-        
+        # Function to check if hypothesis is consistent with the instance
+        def is_consistent(hypothesis, instance):
+            for i in range(len(hypothesis)):
+                if hypothesis[i] != '?' and hypothesis[i] != instance[i]:
+                    return False
+            return True
+
+        # Function to generalize hypothesis
+        def generalize(hypothesis, instance):
+            generalized_hypothesis = list(hypothesis)
+            for i in range(len(hypothesis)):
+                if hypothesis[i] == '?':
+                    generalized_hypothesis[i] = instance[i]
+                elif hypothesis[i] != instance[i]:
+                    generalized_hypothesis[i] = '?'
+            return generalized_hypothesis
+
+        # Function to specialize hypothesis
+        def specialize(hypothesis, instance, target):
+            specialized_hypotheses = []
+            for i in range(len(hypothesis)):
+                if hypothesis[i] == '?' and instance[i] != target[i]:
+                    new_hypothesis = list(hypothesis)
+                    new_hypothesis[i] = target[i]
+                    specialized_hypotheses.append(new_hypothesis)
+            return specialized_hypotheses
+
+        # Read data from CSV file
+        file_path = 'file.csv'
+        data = read_data_from_csv(file_path)
+
+        # Apply Candidate Elimination algorithm
+        specific_hypothesis, general_hypothesis = candidate_elimination(data)
+        print("Specific Hypothesis:", specific_hypothesis)
+        print("General Hypothesis:", general_hypothesis)
+        //*************************************
+        WAP to show singular value decomposition
         import numpy as np
         import pandas as pd
-        df=pd.read_excel('finds_algo.xlsx')
-        df.head(5)
-        d=np.array(df)[:,:-1]
-        d
-        target=np.array(df)[:,-1]
-        target
-        def train(c,t):
-            for i,val in enumerate(t):
-                if val=="Yes":
-                    specific_hypo=c[i].copy()
-                break;
-            for i,val in enumerate(c):
-                if(t[i]=="Yes"):
-                    for x in range(len(specific_hypo)):
-                        if(val[x]!=specific_hypo[x]):
-                            specific_hypo[x]='?'
-                        else:
-                            pass
-            return specific_hypo
-        s=train(d,target)
-        s
-        //************************************************ 
-         
-        Experiment-5
-         EM algorithm to cluster a set of data stored in a .CSV file. Use the same dataset for clustering using k-Means algorithm. Compare the results of these twoalgorithms and comment on the quality of clustering. You can add Java/Python MLlibrary classes/API in the program.
-        
+
+        # Read data from CSV file
+        file_path = "file.csv"
+        data = pd.read_csv(file_path, header=None)
+
+        # Convert data to NumPy array
+        A = data.values
+
+        # Perform Singular Value Decomposition
+        U, S, Vt = np.linalg.svd(A)
+
+        # U: Left singular vectors
+        # S: Singular values (sorted in descending order)
+        # Vt: Right singular vectors (transposed)
+        print("Left Singular Vectors (U):")
+        print(U)
+        print("\nSingular Values (S):")
+        print(S)
+        print("\nRight Singular Vectors (V^T):")
+        print(Vt)
+        //*************************************
+        WAP to show principal component analysis
         import numpy as np
         import pandas as pd
         import matplotlib.pyplot as plt
-        from sklearn.cluster import KMeans
-        X=np.random.rand(200,2)
-        model=KMeans(n_clusters=8)
-        model.fit(X)
-        labels=model.labels_
-        labels
-        centroids=model.cluster_centers_
-        centroids
-        plt.scatter(X[:,0],X[:,1],c=labels,cmap='cividis')
-        plt.scatter(centroids[:,0],centroids[:,1],c='b',s=100,marker='*')
-        plt.xlabel('Feature-1')
-        plt.ylabel('Feature-2')
-        plt.title('KMeans Clustering')
+        from sklearn.decomposition import PCA
+        from sklearn.preprocessing import StandardScaler
+
+        # Load data from CSV file
+        file_path = "file.csv"
+        data = pd.read_csv(file_path)
+
+        # Separate features (X) and target variable (y) if applicable
+        X = data.drop(columns=['target'])  # Assuming 'target' is the column to be dropped
+        y = data['target']  # Assuming 'target' is the target variable
+
+        # Standardize features
+        scaler = StandardScaler()
+        X_scaled = scaler.fit_transform(X)
+
+        # Apply PCA
+        pca = PCA(n_components=2)  # You can change the number of components as needed
+        X_pca = pca.fit_transform(X_scaled)
+
+        # Explained variance ratio
+        explained_variance_ratio = pca.explained_variance_ratio_
+        print("Explained Variance Ratio:", explained_variance_ratio)
+
+        # Plot the data in the new feature space
+        plt.scatter(X_pca[:, 0], X_pca[:, 1], c=y, cmap='viridis')
+        plt.xlabel('Principal Component 1')
+        plt.ylabel('Principal Component 2')
+        plt.title('Principal Component Analysis')
         plt.show()
-        
-        wcss=[]
-        for k in range(1,15):
-            model=KMeans(n_clusters=k)
-            model.fit(X)
-        plt.plot(range(1,15),wcss)
-        plt.xlabel('Number of clusters (K)')
-        plt.ylabel("With in Cluster Sum of Squares(wcss)")
-        plt.title("Elbow method for optimal K")
-        plt.show()
-        //*************************************************
-        
-        Experiment-5
-        Apply EM algorithm to cluster a set of data stored in a .CSV file. Use the same dataset for clustering using k-Means algorithm. Compare the results of these twoalgorithms and comment on the quality of clustering. You can add Java/Python MLlibrary classes/API in the program.
-        
+        //*************************************
+        WAP to show feed forward neural network
+
         import numpy as np
-        import pandas as pd
-        import matplotlib.pyplot as plt
-        from sklearn.cluster import KMeans
-        X=np.random.rand(200,2)
-        model=KMeans(n_clusters=8)
-        model.fit(X)
-        labels=model.labels_
-        labels
-        centroids=model.cluster_centers_
-        centroids
-        plt.scatter(X[:,0],X[:,1],c=labels,cmap='cividis')
-        plt.scatter(centroids[:,0],centroids[:,1],c='b',s=100,marker='*')
-        plt.xlabel('Feature-1')
-        plt.ylabel('Feature-2')
-        plt.title('KMeans Clustering')
-        plt.show()
-        
-        wcss=[]
-        for k in range(1,15):
-            model=KMeans(n_clusters=k)
-            model.fit(X)
-            wcss.append(model.inertia_)
-        plt.plot(range(1,15),wcss)
-        plt.xlabel('Number of clusters (K)')
-        plt.ylabel("With in Cluster Sum of Squares(wcss)")
-        plt.title("Elbow method for optimal K")
-        plt.show()
-        //*************************************************
-        NN-FeedForward
+        from keras.models import Sequential
+        from keras.layers import Dense
+
+        # Generate some synthetic data
+        X = np.random.rand(1000, 10)  # 1000 samples, 10 features
+        y = np.random.randint(2, size=(1000,))  # Binary classification target
+
+        # Define the model architecture
+        model = Sequential()
+        model.add(Dense(64, input_dim=10, activation='relu'))  # Input layer with 10 features
+        model.add(Dense(32, activation='relu'))  # Hidden layer with 32 neurons
+        model.add(Dense(1, activation='sigmoid'))  # Output layer with 1 neuron (for binary classification)
+
+        # Compile the model
+        model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+        # Train the model
+        model.fit(X, y, epochs=10, batch_size=32, validation_split=0.2)
+        //*************************************
+        WAP to show artificial forward neural network
         import numpy as np
 
+        # Define sigmoid activation function
         def sigmoid(x):
-          # Our activation function: f(x) = 1 / (1 + e^(-x))
-          return 1 / (1 + np.exp(-x))
+            return 1 / (1 + np.exp(-x))
 
-        class Neuron:
-          def __init__(self, weights, bias):
-            self.weights = weights
-            self.bias = bias
+        # Define derivative of sigmoid function
+        def sigmoid_derivative(x):
+            return x * (1 - x)
 
-          def feedforward(self, inputs):
-            # Weight inputs, add bias, then use the activation function
-            total = np.dot(self.weights, inputs) + self.bias
-            return sigmoid(total)
+        # Define forward neural network class
+        class NeuralNetwork:
+            def __init__(self, input_size, hidden_size, output_size):
+                # Initialize weights randomly with mean 0
+                self.weights_input_hidden = np.random.normal(0, 1, (input_size, hidden_size))
+                self.weights_hidden_output = np.random.normal(0, 1, (hidden_size, output_size))
 
-        class OurNeuralNetwork:
-          '''
-          A neural network with:
-            - 2 inputs
-            - a hidden layer with 2 neurons (h1, h2)
-            - an output layer with 1 neuron (o1)
-          Each neuron has the same weights and bias:
-            - w = [0, 1]
-            - b = 0
-          '''
-          def __init__(self):
-            weights = np.array([0, 1])
-            bias = 0
+            def forward(self, inputs):
+                # Calculate inputs to hidden layer
+                self.hidden_input = np.dot(inputs, self.weights_input_hidden)
+                # Apply activation function to hidden layer
+                self.hidden_output = sigmoid(self.hidden_input)
+                # Calculate inputs to output layer
+                self.output_input = np.dot(self.hidden_output, self.weights_hidden_output)
+                # Apply activation function to output layer
+                self.output = sigmoid(self.output_input)
+                return self.output
 
-            # The Neuron class here is from the previous section
-            self.h1 = Neuron(weights, bias)
-            self.h2 = Neuron(weights, bias)
-            self.o1 = Neuron(weights, bias)
+        # Example usage
+        input_size = 3
+        hidden_size = 4
+        output_size = 2
+        neural_net = NeuralNetwork(input_size, hidden_size, output_size)
 
-          def feedforward(self, x):
-            out_h1 = self.h1.feedforward(x)
-            out_h2 = self.h2.feedforward(x)
+        # Generate random input
+        inputs = np.random.rand(1, input_size)
 
-            # The inputs for o1 are the outputs from h1 and h2
-            out_o1 = self.o1.feedforward(np.array([out_h1, out_h2]))
-
-            return out_o1
-
-        network = OurNeuralNetwork()
-        x = np.array([2, 3])
-        print(network.feedforward(x)) # 0.7216325609518421
-        //*************************************************
-        naïve Bayesian classifier
-        
-        import pandas as pd
-        import numpy as np
-        df_play=pd.read_csv('PlayTennis.csv')
-        df_play.head(15)
-        import plotly.express as plt
-        figure=plt.parallel_categories(df_play[['Outlook','Play Tennis']],
-                                       height=400,width=500)
-        figure.show()
-        from sklearn.preprocessing import LabelEncoder
-        LE=LabelEncoder()
-        df_play['Outlook']=LE.fit_transform(df_play['Outlook'])
-        df_play['Temperature']=LE.fit_transform(df_play['Temperature'])
-        df_play['Humidity']=LE.fit_transform(df_play['Humidity'])
-        df_play['Wind']=LE.fit_transform(df_play['Wind'])
-        df_play.head(15)
-        X=df_play.drop('Play Tennis',axis=1)
-        y=df_play['Play Tennis']
-        from sklearn.model_selection import train_test_split
-        X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.2,random_state=101)
-        from sklearn.naive_bayes import GaussianNB
-        model=GaussianNB()
-        model.fit(X_train,y_train)
-        y_pred=model.predict([[2,0,0,0]])
-        
-        y_pred
-        predictions=model.predict(X_test)
-        from sklearn.metrics import accuracy_score
-        accuracy_score(y_test,predictions)
-        //************************************************
-                 
-
+        # Forward pass
+        output = neural_net.forward(inputs)
+        print("Output of the neural network:")
+        print(output)
+        //*************************************
+          
 
       </div>
     </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 <script>
       function copyText() {
@@ -560,3 +617,4 @@
     </script>
   </body>
 </html>
+
